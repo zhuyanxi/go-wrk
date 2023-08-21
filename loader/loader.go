@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/tsliwowicz/go-wrk/util"
+	"github.com/zhuyanxi/go-wrk/util"
 )
 
 const (
@@ -122,7 +122,7 @@ func DoRequest(httpClient *http.Client, header map[string]string, method, host, 
 		req.Header.Add(hk, hv)
 	}
 
-	req.Header.Add("User-Agent", USER_AGENT)
+	// req.Header.Add("User-Agent", USER_AGENT)
 	if host != "" {
 		req.Host = host
 	}

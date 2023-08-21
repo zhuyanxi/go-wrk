@@ -8,9 +8,10 @@ import (
 
 	"fmt"
 
-	"golang.org/x/net/http2"
 	"time"
-	"github.com/tsliwowicz/go-wrk/util"
+
+	"github.com/zhuyanxi/go-wrk/util"
+	"golang.org/x/net/http2"
 )
 
 func client(disableCompression bool, disableKeepAlive bool, timeoutms int, allowRedirects bool, clientCert, clientKey, caCert string, usehttp2 bool) (*http.Client, error) {
@@ -24,6 +25,7 @@ func client(disableCompression bool, disableKeepAlive bool, timeoutms int, allow
 	}
 
 	if !allowRedirects {
+		fmt.Println("zhuyanxi log:", allowRedirects)
 		//returning an error when trying to redirect. This prevents the redirection from happening.
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return util.NewRedirectError("redirection not allowed")

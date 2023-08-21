@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tsliwowicz/go-wrk/loader"
-	"github.com/tsliwowicz/go-wrk/util"
+	"github.com/zhuyanxi/go-wrk/loader"
+	"github.com/zhuyanxi/go-wrk/util"
 )
 
 const APP_VERSION = "0.1"
@@ -28,7 +28,7 @@ var headerStr string
 var header map[string]string
 var statsAggregator chan *loader.RequesterStats
 var timeoutms int
-var allowRedirectsFlag bool = false
+var allowRedirectsFlag bool
 var disableCompression bool
 var disableKeepAlive bool
 var playbackFile string
@@ -40,7 +40,7 @@ var http2 bool
 
 func init() {
 	flag.BoolVar(&versionFlag, "v", false, "Print version details")
-	flag.BoolVar(&allowRedirectsFlag, "redir", false, "Allow Redirects")
+	flag.BoolVar(&allowRedirectsFlag, "redir", true, "Allow Redirects")
 	flag.BoolVar(&helpFlag, "help", false, "Print help")
 	flag.BoolVar(&disableCompression, "no-c", false, "Disable Compression - Prevents sending the \"Accept-Encoding: gzip\" header")
 	flag.BoolVar(&disableKeepAlive, "no-ka", false, "Disable KeepAlive - prevents re-use of TCP connections between different HTTP requests")
@@ -150,7 +150,7 @@ func main() {
 	}
 
 	if aggStats.NumRequests == 0 {
-		fmt.Println("Error: No statistics collected / no requests found\n")
+		fmt.Println("Error: No statistics collected / no requests found")
 		return
 	}
 
@@ -159,8 +159,13 @@ func main() {
 	reqRate := float64(aggStats.NumRequests) / avgThreadDur.Seconds()
 	avgReqTime := aggStats.TotDuration / time.Duration(aggStats.NumRequests)
 	bytesRate := float64(aggStats.TotRespSize) / avgThreadDur.Seconds()
-	fmt.Printf("%v requests in %v, %v read\n", aggStats.NumRequests, avgThreadDur, util.ByteSize{float64(aggStats.TotRespSize)})
-	fmt.Printf("Requests/sec:\t\t%.2f\nTransfer/sec:\t\t%v\nAvg Req Time:\t\t%v\n", reqRate, util.ByteSize{bytesRate}, avgReqTime)
+
+	fmt.Printf("%v requests in %v, %v read\n", aggStats.NumRequests, avgThreadDur, util.ByteSize{
+		Size: float64(aggStats.TotRespSize),
+	})
+	fmt.Printf("Requests/sec:\t\t%.2f\nTransfer/sec:\t\t%v\nAvg Req Time:\t\t%v\n", reqRate, util.ByteSize{
+		Size: bytesRate,
+	}, avgReqTime)
 	fmt.Printf("Fastest Request:\t%v\n", aggStats.MinRequestTime)
 	fmt.Printf("Slowest Request:\t%v\n", aggStats.MaxRequestTime)
 	fmt.Printf("Number of Errors:\t%v\n", aggStats.NumErrs)
